@@ -1,24 +1,37 @@
 package hello.itemservice.domain.item;
 
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import javax.persistence.*;
 
 @Data
+@Entity(name="item")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item {
 
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column
     private String itemName;
+    @Column
     private Integer price;
+    @Column
     private Integer quantity;
 
-    public Item(){
 
+    @Builder
+    public Item(String itemName, Integer price, Integer quantity) {
+        this.itemName = itemName;
+        this.price = price;
+        this.quantity = quantity;
     }
 
-    public Item(String itemName, Integer price, Integer quantity) {
+    public void update(String itemName, Integer price, Integer quantity){
         this.itemName = itemName;
         this.price = price;
         this.quantity = quantity;

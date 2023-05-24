@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v0
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://ec2-13-125-96-73.ap-northeast-2.compute.amazonaws.com:3306/itemservice?useUniCode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    password: '1234'
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: 'true'
+        show-sql: 'true'
+
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: mysql   # 추가 해준 부분
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분

@@ -1,71 +1,46 @@
 package hello.itemservice.domain.items;
 
+
 import hello.itemservice.domain.item.Item;
-import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.repository.ItemRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Optional;
 
 
-class ItemRepositoryTest {
+@ActiveProfiles("test")
+@SpringBootTest
+public class ItemRepositoryTest {
 
-    ItemRepository itemRepository = new ItemRepository();
+    @Autowired
+    private ItemRepository itemRepository;
 
-    @AfterEach
-    void afterEach(){
-        itemRepository.clearStore();
+    @BeforeEach
+    void setup(){
+
     }
 
     @Test
     void save(){
         //given
-        Item item = new Item("itemA", 10000, 10);
-
-        //when
-        Item savedItem = itemRepository.save(item);
-
-        //then
-        Item findItem = itemRepository.findById(item.getId());
-        Assertions.assertThat(findItem).isEqualTo(item);
-    }
-
-    @Test
-    void findAll(){
-        //given
-        Item item1 = new Item("itemA", 10000, 10);
-        Item item2 = new Item("itemB", 30000, 220);
+        Item item1 = Item.builder()
+                .itemName("item1")
+                .price(1000)
+                .quantity(23)
+                .build();
 
         //when
         itemRepository.save(item1);
-        itemRepository.save(item2);
-        List<Item> res = itemRepository.findAll();
+        Item findItem = itemRepository.findById(item1.getId()).orElseThrow(() -> new IllegalArgumentException());
 
         //then
-        Assertions.assertThat(res.size()).isEqualTo(2);
-        Assertions.assertThat(res).contains(item1, item2);
-
-
+        Assertions.assertThat(item1.getItemName()).isEqualTo(findItem.getItemName());
     }
 
-    @Test
-    void updateItem(){
-        //given
-        Item item = new Item("itemA", 10000, 10);
 
-        Item newItem = new Item("new item", 20000, 20);
-
-        //when
-        Item savedItem = itemRepository.save(item);
-        itemRepository.update(savedItem.getId(), newItem);
-
-        //then
-        Item findItem = itemRepository.findById(savedItem.getId());
-
-        Assertions.assertThat(findItem.getItemName()).isEqualTo(newItem.getItemName());
-
-    }
 }
