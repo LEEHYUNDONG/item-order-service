@@ -1,6 +1,7 @@
 package hello.itemservice.dto;
 
 
+import hello.itemservice.domain.item.Item;
 import lombok.*;
 
 @NoArgsConstructor
@@ -18,4 +19,11 @@ public class ItemDto {
     @NonNull
     private Integer quantity;
 
+    public static ItemDto of(Item item){
+        return ItemDto.builder()
+                .itemName(item.getItemName())
+                .price(item.getPrice())
+                .quantity(item.getQuantity())
+                .build();
+    }
 }
