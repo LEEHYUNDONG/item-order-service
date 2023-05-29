@@ -1,21 +1,29 @@
 package hello.itemservice.controller;
 
 import hello.itemservice.domain.item.Item;
+import hello.itemservice.dto.ItemDto;
 import hello.itemservice.repository.ItemRepositoryImpl;
+import hello.itemservice.service.ItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @Controller
-@RequestMapping("/basic/items")
 @RequiredArgsConstructor
+@RequestMapping("/basic/items")
 public class ItemController {
     private final ItemRepositoryImpl itemRepositoryImpl;
+
+    private final ItemService itemService;
 
     @PostConstruct
     public void init(){
@@ -24,100 +32,35 @@ public class ItemController {
     }
 
     @GetMapping
-    public String items(Model model){
-        List<Item> items = itemRepositoryImpl.findAll();
-        model.addAttribute("items", items);
-        return "basic/items";
+    public HttpEntity<List<ItemDto>> items(){
+        return new ResponseEntity<List<ItemDto>>(itemService.getItemList(), HttpStatus.OK);
+
 
     }
 
     @GetMapping("/{itemId}")
-    public String item(@PathVariable Long itemId, Model model) {
-        Item item = itemRepositoryImpl.findById(itemId);
-        model.addAttribute("item", item);
-        return "basic/item";
-    }
-
-    @GetMapping("/add")
-    public String addForm(){
-        return "basic/addForm";
-    }
-
-//    @PostMapping("/add")
-    public String addItemV1(@RequestParam String itemName,
-                            @RequestParam Integer price,
-                            @RequestParam Integer quantity,
-                            Model model){
-        Item item = new Item();
-        item.setItemName(itemName);
-        item.setPrice(price);
-        item.setQuantity(quantity);
-
-        itemRepositoryImpl.save(item);
-        model.addAttribute("item", item);
-
-        return "redirect:/basic/items";
-    }
-
-//    @PostMapping("/add")
-    public String addItemV2(@ModelAttribute("item") Item item, Model model){
-
-        itemRepositoryImpl.save(item);
-//        model.addAttribute("item", item);
-
-        return "redirect:/basic/items";
-    }
-
-//    @PostMapping("/add")
-    public String addItemV3(@ModelAttribute Item item, Model model){
-
-        itemRepositoryImpl.save(item);
-//        model.addAttribute("item", item);
-
-        return "redirect:/basic/items";
+    public HttpEntity<ItemDto> item(@PathVariable Long itemId) {
+        return new ResponseEntity<ItemDto>(itemService.findItem(itemId), HttpStatus.OK);
     }
 
 
-//    @PostMapping("/add")
-    public String addItemV4(Item item, Model model){
-
-        itemRepositoryImpl.save(item);
-//        model.addAttribute("item", item);
-
-        return "redirect:/basic/items";
-    }
-
-    /**
-     * PRG - Post/Redirect/Get
-     */
-//    @PostMapping("/add")
-    public String addItemV5(Item item) {
-        itemRepositoryImpl.save(item);
-        return "redirect:/basic/items/" + item.getId();
-    }
-
-    /**
-     * RedirectAttributes
-     */
     @PostMapping("/add")
-    public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
-        Item savedItem = itemRepositoryImpl.save(item);
-        redirectAttributes.addAttribute("itemId", savedItem.getId());
-        redirectAttributes.addAttribute("status", true);
-        return "redirect:/basic/items/{itemId}";
+    public HttpEntity<ItemDto> addItem(ItemDto item, RedirectAttributes redirectAttributes) {
+        ItemDto savedItem = itemService.addItem(item);
+
+        return new ResponseEntity<ItemDto>(savedItem, HttpStatus.OK);
     }
 
-
-    @GetMapping("/{itemId}/edit")
-    public String editForm(@PathVariable Long itemId, Model model) {
-        Item item = itemRepositoryImpl.findById(itemId);
-        model.addAttribute("item", item);
-        return "basic/editForm";
-    }
 
     @PostMapping("/{itemId}/edit")
-    public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
-        itemRepositoryImpl.update(itemId, item);
-        return "redirect:/basic/items/{itemId}";
+    public HttpEntity<Object> edit(@PathVariable Long itemId, @ModelAttribute ItemDto item) {
+        itemService.updateItem(itemId, item);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{itemId}")
+    public HttpEntity<Object> delete(@PathVariable Long itemId){
+        itemService.deleteItem(itemId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

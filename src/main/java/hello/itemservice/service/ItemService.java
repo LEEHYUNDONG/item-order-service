@@ -6,9 +6,14 @@ import java.util.List;
 
 public interface ItemService {
 
-    void addItem(ItemDto req);
-    Long updateItem(ItemDto req);
-    void deleteItem(Long Id);
+    ItemDto addItem(ItemDto req);
+
+    Long updateItem(Long itemId, ItemDto req);
+
+    void deleteItem(Long id);
+
     List<ItemDto> getItemList();
+
+    ItemDto findItem(Long Id);
 
 }
