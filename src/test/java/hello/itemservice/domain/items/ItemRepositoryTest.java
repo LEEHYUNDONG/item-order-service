@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -42,5 +43,28 @@ public class ItemRepositoryTest {
         Assertions.assertThat(item1.getItemName()).isEqualTo(findItem.getItemName());
     }
 
+    @Test
+    void findAll(){
+        //given
+        Item item1 = Item.builder()
+                .itemName("item1")
+                .price(1000)
+                .quantity(23)
+                .build();
+
+        Item item2 = Item.builder()
+                .itemName("item2")
+                .price(10000)
+                .quantity(232131)
+                .build();
+        //when
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+
+        //then
+        List<Item> itemLst = itemRepository.findAll();
+
+        Assertions.assertThat(itemLst.size()).isEqualTo(2);
+    }
 
 }
